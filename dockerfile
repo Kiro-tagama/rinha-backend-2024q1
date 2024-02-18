@@ -1,6 +1,7 @@
 FROM node:latest
 WORKDIR /app
-COPY . .
-
+COPY package*.json ./
 RUN npm install
-ENTRYPOINT ["node", "index.js"]
+COPY . .
+EXPOSE 3000
+CMD ["node", "index.js"]

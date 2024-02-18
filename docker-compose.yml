@@ -8,10 +8,11 @@ services:
     environment:
       - DB_HOSTNAME=db
       - PORT=3000
+    ports:
+      - "3001:3000"
     depends_on:
       - db
     deploy:
-      replicas: 3
       resources:
         limits:
           cpus: '0.3'
@@ -23,6 +24,8 @@ services:
     environment:
       - DB_HOSTNAME=db
       - PORT=3000
+    ports:
+      - "3002:3000"
   
   nginx:
     image: nginx:latest
@@ -32,6 +35,8 @@ services:
     depends_on:
       - api01
       - api02
+    ports:
+      - "9999:9999"
     deploy:
       resources:
         limits:
@@ -45,10 +50,12 @@ services:
       - POSTGRES_PASSWORD=123
       - POSTGRES_USER=admin
       - POSTGRES_DB=rinha
+    ports:
+      - "5432:5432"
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     network_mode: host
-    command: postgres -c 'log_error_verbosity=terse' -c 'checkpoint_timeout=600' -c 'max_wal_size=4096' -c 'max_connections=30' -c 'random_page_cost=1.1' -c 'effective_io_concurrency=30'
+    command: postgres -c checkpoint_timeout=600 -c max_wal_size=4096 -N 50 -c shared_buffers=256MB
     deploy:
       resources:
         limits:

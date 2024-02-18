@@ -1,6 +1,5 @@
 const app = require('fastify')()
 const {Pool} = require('pg')
-const port = 9999
 
 const client = new Pool({
   user: 'admin',
@@ -8,11 +7,13 @@ const client = new Pool({
   database: 'rinha',
   password: '123',
   port: 5432,
-  // max: 1000,    // 65 no
-  // idleTimeoutMillis: 0,
-	// connectionTimeoutMillis: 10000,
+  max: 60,
+  idleTimeoutMillis: 0,
+  connectionTimeoutMillis: 10000,
 })
+client.connect().then(res=>console.log("conectou")).catch(err=>console.log("n conectou"))
 
+app.get('/', (req,res) => res.status(200).send("server on"))
 /* */
 app.get('/clientes/:id/extrato', async (req, res) => {
   try {
@@ -85,4 +86,4 @@ app.delete('/clientes/:id/extrato', async (req, res) => {
   return res.status(200).send();
 })
 /* */
-app.listen({ port: port })
+app.listen({ port: process.env.HTTP_PORT, host:"0.0.0.0"});
